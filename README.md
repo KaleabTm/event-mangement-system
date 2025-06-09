@@ -43,7 +43,7 @@ ems/
 
 ```bash
 git clone https://github.com/KaleabTm/event-mangement-system.git
-cd ems
+cd event-mangement-system
 ```
 
 ### 2. Build & Run Containers
