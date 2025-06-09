@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  django:
+    build:
+      context: ../../
+      dockerfile: docker/development/Dockerfile
+    container_name: ems_backend
+    environment:
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    volumes:
+      - ../../:/usr/src/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: on-failure
