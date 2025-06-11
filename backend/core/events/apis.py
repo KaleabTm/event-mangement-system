@@ -1,5 +1,3 @@
-from asyncio import Event
-
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
@@ -10,6 +8,7 @@ from core.calendar.models import Calendar
 from core.calendar.serializers import CalendarSerializer
 from core.users.serializers import UserSerializer
 
+from .models import Event
 from .selectors import get_event_by_id, get_user_events
 from .serializers import RecurrenceRuleSerializer
 from .services import event_create, event_delete, event_update
@@ -30,25 +29,19 @@ class EventListApi(ApiAuthMixin, APIView):
         updated_at = serializers.DateTimeField()
         recurrence = RecurrenceRuleSerializer()
 
+    serializer_class = OutputSerializer
+
     def get(self, request):
         try:
-            # print("event")
-
             events = get_user_events(user=request.user)
 
-            # # print("d", events)
-
             serializer = self.OutputSerializer(events, many=True)
-
-            # print("ss", serializer.data)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except ValidationError as e:
-            # print("Validation error:", e)
             raise ValidationError(e)
         except Exception as e:
-            # print("An unexpected error occurred:", e)
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -78,8 +71,9 @@ class EventCreateApi(ApiAuthMixin, APIView):
         is_all_day = serializers.BooleanField()
         recurrence = RecurrenceRuleSerializer()
 
+    serializer_class = InputSerializer
+
     def post(self, request):
-        # print("pp", request.data)
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
@@ -115,6 +109,8 @@ class EventDetailApi(ApiAuthMixin, APIView):
         color = serializers.CharField(allow_null=True)
         is_all_day = serializers.BooleanField()
         recurrence = RecurrenceRuleSerializer()
+
+    serializer_class = OutputSerializer
 
     def get(self, request, event_id):
         try:
@@ -156,6 +152,8 @@ class EventUpdateApi(ApiAuthMixin, APIView):
         is_all_day = serializers.BooleanField()
         recurrence = RecurrenceRuleSerializer()
 
+    serializer_class = InputSerializer
+
     def put(self, request, event_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -192,10 +190,9 @@ class EventUpdateApi(ApiAuthMixin, APIView):
 class EventDeleteApi(ApiAuthMixin, APIView):
     def delete(self, request, event_id):
         try:
-            event = Event.objects.get(id=event_id, user=request.user)
+            event_delete(event_id=event_id, user=request.user)
 
-            event_delete(event=event)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK)
 
         except Event.DoesNotExist:
             raise NotFound("Event not found.")

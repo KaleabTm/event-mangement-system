@@ -113,5 +113,5 @@ def event_update(
     return event
 
 
-def event_delete(*, event: Event):
-    event.delete()
+def event_delete(*, event_id: str, user: User):
+    Event.objects.get(id=event_id, user=user).delete()

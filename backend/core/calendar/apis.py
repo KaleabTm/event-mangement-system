@@ -42,6 +42,8 @@ class CalendarListApi(ApiAuthMixin, APIView):
             },
         )
 
+    serializer_class = OutputSerializer
+
     def get(self, request):
         try:
             calendars = get_all_calendars_for_user(user=request.user)
@@ -85,6 +87,8 @@ class CalendarCreateApi(ApiAuthMixin, APIView):
             },
         )
 
+    serializer_class = InputSerializer
+
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -126,6 +130,8 @@ class CalendarDetailApi(ApiAuthMixin, APIView):
             },
         )
 
+    serializer_class = OutputSerializer
+
     def get(self, request, calendar_id):
         try:
             calendar = get_calendar_by_id_for_user(calendar_id=calendar_id, user=request.user)
@@ -155,6 +161,8 @@ class CalendarUpdateApi(ApiAuthMixin, APIView):
         created_at = serializers.DateTimeField()
         updated_at = serializers.DateTimeField()
 
+    serializer_class = InputSerializer
+
     def put(self, request, calendar_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -178,4 +186,4 @@ class CalendarUpdateApi(ApiAuthMixin, APIView):
 class CalendarDeleteApi(ApiAuthMixin, APIView):
     def delete(self, request, calendar_id):
         calendar_delete(calendar_id=calendar_id, user=request.user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)

@@ -20,11 +20,8 @@ class LoginApi(APIView):
         password = serializers.CharField()
 
     def post(self, request):
-        # print("req", request.data)
         serializer = self.InputSerializer(data=request.data)
-        # # print("data",serializer.data)
         serializer.is_valid(raise_exception=True)
-        # print("valid_data", serializer.validated_data)
         try:
             user = authenticate(request, **serializer.validated_data)
 
@@ -45,10 +42,8 @@ class LoginApi(APIView):
                 },
             )
         except AuthenticationFailed as e:
-            # print("Authentication failed:", e)
             raise AuthenticationFailed(e)
         except Exception as e:
-            # print("An unexpected error occurred:", e)
             return Response({"message": "An unexpected error occurred", "extra": {"details": str(e)}}, status=500)
 
 
@@ -88,12 +83,10 @@ class RegisterApi(APIView):
 
     def post(self, request):
         try:
-            # print("req", request.data)
             input_serializer = self.serializer_class(data=request.data)
             input_serializer.is_valid(raise_exception=True)
 
             user_create(**input_serializer.validated_data)
-            # print("user_instance", user_instance)
             user = authenticate(
                 request,
                 email=input_serializer.validated_data["email"],
@@ -115,9 +108,7 @@ class RegisterApi(APIView):
             )
 
         except ValidationError as e:
-            # print("Validation error:", e)
             raise ValidationError(e)
 
         except Exception as e:
-            # print("An unexpected error occurred during registration:", e)
             raise ValidationError(e)

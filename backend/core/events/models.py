@@ -34,7 +34,7 @@ class RecurrenceRule(BaseModel):
     weekdays = models.JSONField(blank=True, null=True)
     weekday_ordinal = models.IntegerField(blank=True, null=True)
     end_date = models.DateField(null=True, blank=True)
-    repeat_count = models.PositiveIntegerField(null=True, blank=True)  # For `endAfter`
+    repeat_count = models.PositiveIntegerField(null=True, blank=True)
 
     def clean(self):
         super().clean()
